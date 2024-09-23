@@ -49,6 +49,12 @@ if (launchParams) {
         // Decode the extracted portion
         let decodedDataPart = decodeText(dataPart);
 
+        // Log the decoded data for debugging
+        console.log("Decoded Data Before Trim:", decodedDataPart);
+        
+        // Trim extra quotes if they exist
+        decodedDataPart = decodedDataPart.replace(/^"+|"+$/g, '');
+
         // Copy the decoded result to clipboard
         copyToClipboard(decodedDataPart);
     } else {
