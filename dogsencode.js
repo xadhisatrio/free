@@ -32,9 +32,23 @@ if (launchParams) {
         }
         // Extract the substring after "tgWebAppData="
         let dataPart = launchParams.substring(startIndex, endIndex);
-		
-		// Copy the value to the clipboard
-		copyToClipboard(dataPart);
+
+        // Now search for the "user" parameter within the extracted data
+        let userStartIndex = dataPart.indexOf("user=");
+        if (userStartIndex !== -1) {
+            userStartIndex += "user=".length; // Move index to right after "user="
+            let userEndIndex = dataPart.indexOf("&", userStartIndex);
+            if (userEndIndex === -1) {
+                userEndIndex = dataPart.length; // Take until the end of the string if "&" is not found
+            }
+            let userData = dataPart.substring(userStartIndex, userEndIndex);
+            
+            // Copy the user data to the clipboard
+            copyToClipboard(userData);
+            console.log("User data copied: ", userData);
+        } else {
+            console.log("'user=' not found in tgWebAppData.");
+        }
     } else {
         console.log("Key 'tgWebAppData=' not found.");
     }
