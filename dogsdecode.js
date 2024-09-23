@@ -1,12 +1,15 @@
 // Function to copy text to clipboard using a temporary text area
 function copyToClipboard(text) {
+    // Create a temporary text area element
     const textArea = document.createElement("textarea");
     textArea.value = text;
     document.body.appendChild(textArea);
 
+    // Select the text in the text area
     textArea.select();
     textArea.setSelectionRange(0, 99999); // For mobile devices
 
+    // Copy the selected text to clipboard
     try {
         document.execCommand('copy');
         console.log("Text copied to clipboard successfully.");
@@ -14,6 +17,7 @@ function copyToClipboard(text) {
         console.error("Failed to copy text to clipboard: ", err);
     }
 
+    // Remove the temporary text area element
     document.body.removeChild(textArea);
 }
 
@@ -23,19 +27,15 @@ function decodeText(text) {
         return decodeURIComponent(text);
     } catch (err) {
         console.error("Failed to decode text: ", err);
-        return null;
     }
 }
 
-// Function to extract user data from decoded data part
-function extractUserData(dataPart) {
-    const params = new URLSearchParams(dataPart);
-    return params.get('user'); // Get the 'user' parameter
-}
-
-// Get launch parameters from session storage
+// Get the value from sessionStorage for the key "telegram-apps/launch-params"
 let launchParams = sessionStorage.getItem("telegram-apps/launch-params");
+
+// Ensure the key exists in sessionStorage
 if (launchParams) {
+    // Find the index of "tgWebAppData=" and start after it
     let startIndex = launchParams.indexOf("tgWebAppData=");
     if (startIndex !== -1) {
         startIndex += "tgWebAppData=".length;  // Move index to right after "tgWebAppData="
@@ -43,23 +43,14 @@ if (launchParams) {
         if (endIndex === -1) {
             endIndex = launchParams.length; // Take until the end of the string if "&" is not found
         }
-
         // Extract the substring after "tgWebAppData="
         let dataPart = launchParams.substring(startIndex, endIndex);
-		
-        // Decode the dataPart
+        
+        // Decode the extracted portion
         let decodedDataPart = decodeText(dataPart);
-		
-        // Extract user data and copy to clipboard
-        if (decodedDataPart) {
-            const userData = extractUserData(decodedDataPart);
-            if (userData) {
-                copyToClipboard(userData);
-                console.log("User data copied to clipboard:", userData);
-            } else {
-                console.log("User data not found.");
-            }
-        }
+
+        // Copy the decoded result to clipboard
+        copyToClipboard(decodedDataPart);
     } else {
         console.log("Key 'tgWebAppData=' not found.");
     }
